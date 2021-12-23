@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Counter</title>
+    <style>
+      body {
+        font-size: 16px;
+      }
+      .card {
+        margin: 200px 700px;
+        width: 250px;
+        height: 170px;
+        background: skyblue;
+        justify-content: center;
+        text-align: center;
+        line-height: 20px;
+        overflow: auto;
+      }
+      .local-card {
+        margin: 20px;
+      }
+      .session-card {
+        margin: 20px;
+      }
+      button {
+        background-color: green;
+        color: white;
+        border: none;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        padding: 10px 20px;
+      }
+      button:hover {
+          background-color: orange;
+          color: white
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="local-card">
+        Local Score :
+        <span id="local"></span>
+      </div>
+      <div class="session-card">
+        Session Score :
+        <span id="session"></span>
+      </div>
+      <form id="task-form" action="index.html">
+        <button id="add">count</button>
+      </form>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

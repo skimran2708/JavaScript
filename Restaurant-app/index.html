@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>ZemosoRestaurant</title>
+  </head>
+  <body>
+    <div class="menu">
+      <h1>Menu</h1>
+      <div class="search-box">
+        <input
+          type="text"
+          placeholder="Search menu... by course, by food"
+          size="30"
+          id="myMenuInput"
+          onkeyup="searchForItems()"
+        />
+      </div>
+      <div class="menu-items"></div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="tables">
+      <h1>Tables</h1>
+      <div class="search-box">
+        <input
+          type="text"
+          placeholder="Search table"
+          size="10"
+          id="myTableInput"
+          onkeyup="searchForTable()"
+        />
+      </div>
+      <div class="table"></div>
+    </div>
+
+    <div class="table-details">
+      <div class="header">
+        <h2 id="order-header">&nbsp;</h2>
+        <button
+          data-close-button
+          class="closeButton"
+          id="btn"
+          onclick="closeTableDetails(event)"
+        >
+          &times;
+        </button>
+      </div>
+      <div class="details">
+        <table id="table-items" cellspacing="28" width="5"></table>
+      </div>
+      <div class="billing">
+        <div class="total">
+          Total : 
+          <div id="total-price"></div>
+        </div>
+        <button id="generateBill" onclick="generateBill(event)">
+          CLOSE SESSION(Generate Bill)
+        </button>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

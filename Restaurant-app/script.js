@@ -129,6 +129,8 @@ for(let i=0;i<table.length;i++){
     );
 }
 
+
+
 //search for particular table
 function searchForTable(){
     let input = document.getElementById('myTableInput').value.toLowerCase(); 
@@ -160,12 +162,27 @@ function drop(e){
     let items = table[tableId-1].itemList;
     console.log(table[tableId-1].itemList.size);
     if(items.size > 0 && items.get(selectedItemId)!=undefined){
-        items.set(selectedItemId,items.get(selectedItemId)+parseInt(1));
+        var quant=items.get(selectedItemId)+parseInt(1)
+        items.set(selectedItemId,quant);
+        sessionStorage.setItem(table[tableId-1].name+", Item-"+selectedItemId, quant);
     }else{
         items.set(selectedItemId,1);
+        if(sessionStorage.getItem(table[tableId-1].name))
+        {
+            sessionStorage.setItem(table[tableId-1].name, sessionStorage.getItem(table[tableId-1].name)+" "+selectedItemId);
+        }
+        else
+        {
+            sessionStorage.setItem(table[tableId-1].name, selectedItemId);
+        }
+        sessionStorage.setItem(table[tableId-1].name+", Item-"+selectedItemId, 1);
     }
     table[tableId-1]['price'] += menuItems[selectedItemId-1]['price'];
     table[tableId-1]['quantity']++;
+
+    // sessionStorage.setItem(table[tableId-1].name+", Total", table[tableId-1]['price']);
+    // sessionStorage.setItem(table[tableId-1].name+", Quantity", table[tableId-1]['quantity']);
+
     document.getElementById(e.target.id).style.backgroundColor="inherit";
     document.getElementById("table-totalPrice"+tableId).textContent = "Total : Rs. " + table[tableId-1]['price']; 
     document.getElementById("table-totalItems"+tableId).textContent = "Total items : " +table[tableId-1]['quantity'];
@@ -189,6 +206,15 @@ function orderDetails(e){
     let header = document.getElementById('order-header');
     header.textContent = `Table-${tableId} | Order Details`;
     displayOrderItems(tableId);
+
+    var generateBillButton = document.createElement("button");
+    generateBillButton.setAttribute("id","generateBill");
+    generateBillButton.innerHTML="CLOSE SESSION(Generate Bill)";
+    // var generateBillButton = document.getElementById("generateBill");
+    generateBillButton.addEventListener("click",()=>{generateBill(tableId);});
+    document.getElementsByClassName("billing")[0].appendChild(generateBillButton);
+    //generateBillButton.removeEventListener("click",()=>{generateBill(tableId);});
+ 
 }
 
 function displayOrderItems(tableId){
@@ -219,11 +245,15 @@ function displayOrderItems(tableId){
             document.getElementById("table-items").innerHTML = htmlString;
         }
         document.querySelector('#total-price').textContent = table[tableId-1].price.toFixed(2);
+
     }else{
         document.getElementById("table-items").innerHTML = `<div style="margin : 22px 159px;font-size:25px">Order&nbsp;list&nbsp;is&nbsp;empty</div>`;
         document.querySelector('#total-price').textContent = table[tableId-1].price;
+        document.getElementById("generateBill").remove();
     }
+
     document.querySelector('.closeButton').id = tableId;
+    
 }
 
 function closeTableDetails(e){
@@ -231,6 +261,8 @@ function closeTableDetails(e){
     document.querySelector('.tables').className = "tables";
     document.querySelector('body').style.backgroundColor = "white";
     document.getElementById(`table${e.target.id}`).style.backgroundColor="inherit";
+
+    document.getElementById("generateBill").remove();
 }
 
 function deleteItem(tableId,itemId){
@@ -238,6 +270,20 @@ function deleteItem(tableId,itemId){
     price = menuItems[itemId-1].price;
     table[tableId].price -= price * count;
     table[tableId].quantity -= count;
+
+    sessionStorage.removeItem(table[tableId].name+", Item-"+itemId);
+    sessionStorage.setItem(table[tableId].name, sessionStorage.getItem(table[tableId].name).replace(itemId,""));
+    // sessionStorage.setItem(table[tableId].name+", Total", table[tableId]['price']);
+    // sessionStorage.setItem(table[tableId].name+", Quantity", table[tableId]['quantity']);
+
+    if(sessionStorage.getItem(table[tableId].name) == 0) {
+        sessionStorage.removeItem(table[tableId].name);
+    }
+    // if(sessionStorage.getItem(table[tableId].name+", Quantity", table[tableId]['quantity']) == 0) {
+    //     sessionStorage.removeItem(table[tableId].name+", Total", table[tableId]['price']);
+    //     sessionStorage.removeItem(table[tableId].name+", Quantity", table[tableId]['quantity']);
+    // }
+
     table[tableId].itemList.delete(itemId);
     document.getElementById("table-totalPrice"+(parseInt(tableId)+1)).textContent = "Total : Rs. " + table[tableId]['price']; 
     document.getElementById("table-totalItems"+(parseInt(tableId)+1)).textContent = "Total items : " +table[tableId]['quantity'];
@@ -257,14 +303,31 @@ function updateQuantity(tableId,itemId){
         table[tableId-1].price += (newPrice-oldPrice);
         table[tableId-1].quantity += (newQuantity - oldQuantity);
         table[tableId-1].itemList.set(itemId,newQuantity);
+
+        sessionStorage.setItem(table[tableId-1].name+", Item-"+itemId, newQuantity);
+        // sessionStorage.setItem(table[tableId-1].name+", Total", table[tableId-1]['price'])
+        // sessionStorage.setItem(table[tableId-1].name+", Quantity", table[tableId-1]['quantity']);
     }
     document.getElementById("table-totalPrice"+(parseInt(tableId))).textContent = "Total : Rs. " + table[tableId-1]['price']; 
     document.getElementById("table-totalItems"+(parseInt(tableId))).textContent = "Total items : " +table[tableId-1]['quantity'];
     displayOrderItems(parseInt(tableId));
+
+    
     
 }
 
-function generateBill(e) {
+function generateBill(tableId) {
     let bill = document.getElementById("total-price").textContent;
-    alert(`Total Bill : Rs. ${bill}`,location.reload());
+    console.log(tableId);
+
+    alert(`${table[tableId-1].name} Total Bill : Rs. ${bill}`);
+
+    let items = table[tableId-1].itemList;
+    for(let itemId of items.keys()) {
+        deleteItem(tableId-1,itemId);
+    }
+}
+
+window.onunload = function() {
+    sessionStorage.clear();
 }
